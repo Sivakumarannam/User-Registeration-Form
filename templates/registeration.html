@@ -8,7 +8,7 @@
 <body>
     <center>
         <h1><u>User Registeration Form</u></h1>
-        <form action="" method="POST">
+        <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
                 {{ufo.as_p}}
                 {{pfo.as_p}}
