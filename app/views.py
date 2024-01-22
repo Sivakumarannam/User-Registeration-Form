@@ -5,6 +5,8 @@ from django.shortcuts import render
 from app.forms import *
 from django.http import HttpResponse
 
+from django.core.mail import send_mail
+
 def registeration(request):
     ufo=Userform()
     pfo=Profileform()
@@ -21,7 +23,37 @@ def registeration(request):
             MPFDO=pfd.save(commit=False)
             MPFDO.username=MUFDO
             MPFDO.save()
+            send_mail('Registeration Process',
+                      'Thank You Registration is Successfull!!!',
+                      'vamsifun4@gmail.com',
+                      [MUFDO.email],
+                      fail_silently=False)
+
+
             return HttpResponse('Registration Succesfull')
         else:
             return HttpResponse('Invalid Data')
     return render(request,'registeration.html',d)
+
+# twcl hnpe fnxn hhgj
+
+
+
+
+
+
+
+
+
+
+
+
+
+        
+
+
+
+
+
+
+
