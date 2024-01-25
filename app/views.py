@@ -7,6 +7,7 @@ from django.http import HttpResponse,HttpResponseRedirect
 from django.contrib.auth import authenticate,login,logout
 from django.urls import reverse
 from django.core.mail import send_mail
+from django.contrib.auth.decorators import login_required
 
 def registeration(request):
     ufo=Userform()
@@ -59,6 +60,19 @@ def user_login(request):
             return HttpResponse('Invalid Crenditals')
 
     return render(request,'user_login.html')
+
+@login_required
+def user_logout(request):
+    logout(request)
+    return HttpResponseRedirect(reverse('home'))
+
+
+def profile_display(request):
+    un=request.session.get('username')
+    UO=User.objects.get(username=un)
+    PO=Profile.objects.get(username=UO)
+    d={'UO':UO,'PO':PO}
+    return render(request,'profile_display.html',d)
 
 
 
