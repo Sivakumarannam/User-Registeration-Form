@@ -4,10 +4,11 @@ from django.shortcuts import render
 
 from app.forms import *
 from django.http import HttpResponse,HttpResponseRedirect
-from django.contrib.auth import authenticate,login,logout
+from django.contrib.auth import authenticate,login,logout, update_session_auth_hash
 from django.urls import reverse
 from django.core.mail import send_mail
 from django.contrib.auth.decorators import login_required
+from django.contrib.auth.forms import PasswordChangeForm
 
 def registeration(request):
     ufo=Userform()
@@ -66,13 +67,52 @@ def user_logout(request):
     logout(request)
     return HttpResponseRedirect(reverse('home'))
 
-
+@login_required
 def profile_display(request):
     un=request.session.get('username')
     UO=User.objects.get(username=un)
     PO=Profile.objects.get(username=UO)
     d={'UO':UO,'PO':PO}
     return render(request,'profile_display.html',d)
+
+
+@login_required
+def change_password(request):
+    # if request.method=='POST':
+    #     pw=request.POST['pw']
+    #     username=request.session.get('username')
+    #     UO=User.objects.get(username = username)
+    #     UO.set_password(pw)
+    #     UO.save()
+    if request.method=='POST':
+        fm=PasswordChangeForm(user=request.user, data=request.POST)
+        if fm.is_valid():
+            fm.save()
+            update_session_auth_hash(request, fm.user)
+            return HttpResponseRedirect(reverse('home'))
+    else:
+        fm=PasswordChangeForm(user=request.user)
+    return render(request,'change_password.html',{'fm':fm})
+
+
+
+
+def forgot_password(request):
+    if request.method=='POST':
+        username=request.POST['un']
+        password=request.POST['pw']
+        LUO=User.objects.filter(username=username)
+        if LUO:
+            UO=LUO[0]
+            UO.set_password(password)
+            UO.save()
+            return HttpResponse('Go Back to Login Page')
+        else:
+            return HttpResponse('Your name not matched in our database. So, Retype correctlyyy!!!!!')
+    return render(request,'forgot_password.html')
+
+
+
 
 
 
